@@ -1,61 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Crud = () => {
   // State initialization
-  const [tasks, setTasks] = useState([]); // To handle the values as an array
-  const [current, setCurrent] = useState(""); // To hold the value of the input field
-  const [isEditable, setIseditable] = useState(false) // To conditionally render the Add/Update button
-  const [editedValue, setEditedvalue] = useState("") // To store the updated value
+  const [inputValue, setInputValue] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
 
-
-  // Onchange Event
-  const handleChange = (e) => {
-    // console.log(e.target.value);
-    setCurrent(e.target.value);
+  const addtaskHandler = () => {
+    const transformedData = {
+      id: Date.now(),
+      text: inputValue,
+    };
+    setTasks([...tasks, transformedData]);
+    setInputValue("");
   };
 
-  // Creating - addhandler
-  const addTask = (e) => {
-    e.preventDefault();
-    setTasks([...tasks, {id: Date.now(), text:current}]);
-    setCurrent("");
-  };
-  // console.log(tasks);
-
-  //Reading - Edithandler
-  const handleEdit = (task) =>{
-    // console.log(task)
-    setCurrent(task.text)
-    setIseditable(true)
-    setEditedvalue(task)
-    // console.log(task)
+  const editTaskHandler = (task)=>{
+    setInputValue(task.text)
+    setSelectedTask(task)
   }
-  // console.log(editedValue)
 
-  //Updating - Updatehandler
-  const handleUpdate = () =>{
-    setIseditable(false)
-    setCurrent("")
+  const updateTaskHandler = ()=>{
+    const tempArr = [...tasks]
+    const currentValueIndex = tempArr.findIndex(p => p.id == selectedTask.id)
+    const currentData = tempArr[currentValueIndex]
+    currentData.text = inputValue
+
+    setTasks(tempArr)
+    setSelectedTask(null)
+    setInputValue("")
+  }
+ 
+  const deleteTaskHandler = (task)=>{
+    const filteredTasks = tasks.filter(p => p.id != task.id)
+    setTasks(filteredTasks)
   }
 
   return (
     <div>
-      <div>
-        {/* passing the name and value prop to the input field */}
-        <input type="text" name={current} value={current} onChange={handleChange} placeholder="Enter your task..!"/>
-        {isEditable ? (<button onClick={handleUpdate}>Update</button>):(<button onClick={addTask}>Add</button>)}
-      </div>
-      <div>
-       <ul>
-        {tasks.map((task)=>(
-            <li key={task.id} type="none">
-                <span>{task.text}</span>
-                <button onClick={() => handleEdit(task)}>Edit</button>
-                <button>Delete</button>
-            </li>
-        ))}
-       </ul>
-      </div>
+      <input type="text" name="text-box" value={inputValue} onChange={(event) => setInputValue(event.target.value)}/>
+      {selectedTask ? <button onClick={updateTaskHandler}>Update</button> : <button onClick={addtaskHandler}>Add</button> }
+      {tasks.map((item) => (
+        <ul type="none" key={item.id}>
+          <li>
+            <span>{item.text}</span>
+            <button onClick={()=> editTaskHandler(item)}>Edit</button>
+            <button onClick={()=> deleteTaskHandler(item)}>Delete</button>
+          </li>
+        </ul>
+      ))}
     </div>
   );
 };
