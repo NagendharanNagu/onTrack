@@ -86,16 +86,16 @@ const Crud = () => {
           <button onClick={() => setCurrentTab("COMPLETED")} className={currentTab === "COMPLETED" ? "active-tab" : "inactive-tab"}>Completed</button>
         </div>
        </div>
-        
+        <div className="task-list">
           {currentTab == "PENDING"
             ? tasks.map((item) => (
-                <ul type="none" key={item.id}>
+                <ul type="none" className="task-item" key={item.id}>
                   <li>
                     <input
                       type="checkbox"
                       onClick={() => checkboxHandler(item)}
                     />
-                    <span>{item.text}</span>
+                    <span className="task-text">{item.text}</span>
                     <button onClick={() => editTaskHandler(item)}>Edit</button>
                     <button onClick={() => deleteTaskHandler(item)}>
                       Delete
@@ -104,7 +104,7 @@ const Crud = () => {
                 </ul>
               ))
             : completedHandler()}
-        
+        </div>
       </div>
     </div>
   );
