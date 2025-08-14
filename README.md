@@ -76,6 +76,6 @@ Keep all operations synchronous in memory (no external storage yet).
 
 
 🚀 Installation & Usage
-git clone <repo-url>
+git clone <https://github.com/NagendharanNagu/onTrack.git>
 npm install
 npm run dev
