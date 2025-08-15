@@ -9,15 +9,31 @@ const Crud = () => {
   const [completedTask, setCompletedTask] = useState([]);
   const [currentTab, setCurrentTab] = useState("PENDING");
 
-  const addtaskHandler = () => {
+  
+  const duplicateTaskHandler = () =>{
+    //Trim the current input
+    const trimmedInputValue = inputValue.trim().toLowerCase();
+
+    //Logic to handle the duplicate value
+    return tasks.some(task => task.text.trim().toLowerCase() === trimmedInputValue)   
+  }
+
+  const addtaskHandler = () => {  
+
+    if(duplicateTaskHandler()){
+      window.alert(`${inputValue} — already in the list.`)
+      setInputValue("")
+      return;
+    }
+
     const transformedData = {
       id: Date.now(),
       text: inputValue,
-      isCompleted: false,
     };
     setTasks([...tasks, transformedData]);
     setInputValue("");
   };
+  // console.log(tasks)
 
   const editTaskHandler = (task) => {
     setInputValue(task.text);
@@ -25,6 +41,11 @@ const Crud = () => {
   };
 
   const updateTaskHandler = () => {
+     if(duplicateTaskHandler()){
+      window.alert(`${inputValue} — already in the list.`)
+      return;
+    }
+
     const tempArr = [...tasks];
     const currentValueIndex = tempArr.findIndex((p) => p.id == selectedTask.id);
     const currentData = tempArr[currentValueIndex];
@@ -42,7 +63,7 @@ const Crud = () => {
 
   const checkboxHandler = (task) => {
     const filteredTasks = tasks.filter((p) => p.id == task.id);
-    setCompletedTask(filteredTasks);
+    completedTask.push(...filteredTasks)
     deleteTaskHandler(task);
   };
 
@@ -50,31 +71,34 @@ const Crud = () => {
     return completedTask.map((item) => (
       <ul key={item.id} type="none">
         <li>
-          <span>{item.text}</span>
+          <span>👍{item.text}</span>
         </li>
       </ul>
     ));
   };
 
+  useEffect(()=>{
+    sessionStorage.setItem("ToDo", JSON.stringify(tasks))
+    sessionStorage.setItem("Completed", JSON.stringify(completedTask))
+  },[tasks,completedTask])
+
+
   return (
     <div className="task-container">
-      <h1 className="text">Action Tracker</h1>
+      <h1 className="text">Daily Task Manager</h1>
       <div className="input-and-btn-container">
         <input
           type="text"
+          placeholder="Let’s make today productive! 😊"
           name="text-box"
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
           className="task-text-input"
         />
         {selectedTask ? (
-          <button onClick={updateTaskHandler} className="update-btn">
-            UpdateTask
-          </button>
+          <button onClick={updateTaskHandler} className="update-btn" disabled = {inputValue.trim() == ""}>UpdateTask</button>
         ) : (
-          <button onClick={addtaskHandler} className="add-btn">
-            AddTask
-          </button>
+          <button onClick={addtaskHandler} className="add-btn" disabled = {inputValue.trim() == ""}>AddTask</button> // disabled the add button when input field contains 0 value.
         )}
       </div>
       <div>
@@ -91,15 +115,10 @@ const Crud = () => {
             ? tasks.map((item) => (
                 <ul type="none" className="task-item" key={item.id}>
                   <li>
-                    <input
-                      type="checkbox"
-                      onClick={() => checkboxHandler(item)}
-                    />
+                    <input type="checkbox" onClick={() => checkboxHandler(item)}/>
                     <span className="task-text">{item.text}</span>
                     <button onClick={() => editTaskHandler(item)}>Edit</button>
-                    <button onClick={() => deleteTaskHandler(item)}>
-                      Delete
-                    </button>
+                    <button onClick={() => deleteTaskHandler(item)}>Delete</button>
                   </li>
                 </ul>
               ))
