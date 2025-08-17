@@ -39,7 +39,7 @@ const Crud = () => {
     setInputValue(task.text);
     setSelectedTask(task);
   };
-
+// check useCallback and useMemo and see if you can wrap any functions inside them
   const updateTaskHandler = () => {
      if(duplicateTaskHandler()){
       window.alert(`${inputValue} — already in the list.`)
@@ -76,7 +76,7 @@ const Crud = () => {
       </ul>
     ));
   };
-
+// try not use session storage, rather use in built state 
   useEffect(()=>{
     sessionStorage.setItem("ToDo", JSON.stringify(tasks))
     sessionStorage.setItem("Completed", JSON.stringify(completedTask))
