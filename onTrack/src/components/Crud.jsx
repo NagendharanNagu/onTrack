@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "../css/crud.css";
 
 const Crud = () => {
@@ -40,7 +40,8 @@ const Crud = () => {
     setSelectedTask(task);
   };
 
-  const updateTaskHandler = () => {
+  // Using call back function to improve performance
+  const updateTaskHandler = useCallback(() => {
      if(duplicateTaskHandler()){
       window.alert(`${inputValue} — already in the list.`)
       return;
@@ -54,7 +55,7 @@ const Crud = () => {
     setTasks(tempArr);
     setSelectedTask(null);
     setInputValue("");
-  };
+  },[tasks,selectedTask,inputValue]);
 
   const deleteTaskHandler = (task) => {
     const filteredTasks = tasks.filter((p) => p.id != task.id);
@@ -77,12 +78,7 @@ const Crud = () => {
     ));
   };
 
-  useEffect(()=>{
-    sessionStorage.setItem("ToDo", JSON.stringify(tasks))
-    sessionStorage.setItem("Completed", JSON.stringify(completedTask))
-  },[tasks,completedTask])
-
-
+  
   return (
     <div className="task-container">
       <h1 className="text">Daily Task Manager</h1>
